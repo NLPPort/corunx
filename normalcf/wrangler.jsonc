@@ -24,5 +24,11 @@
   ],
   "observability": {
     "enabled": true
+  },
+  // Admin UI (built from ../admin-ui → static/console). Worker maps /console/* → ASSETS.
+  "assets": {
+    "directory": "./static/console",
+    "binding": "ASSETS",
+    "run_worker_first": true
   }
 }
