@@ -571,6 +571,14 @@ table.data tbody tr:hover {
   gap: 0.65rem;
 }
 
+.build-commit {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+  opacity: 0.85;
+  user-select: all;
+}
+
 .logout-btn {
   width: 100%;
   font-size: 0.8rem;

