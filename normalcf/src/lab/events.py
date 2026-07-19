@@ -1,12 +1,17 @@
 """Operator / honeypot event timeline."""
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 
+from lab.auth import require_admin
 from lab.columns import LAB_EVENT_COLUMNS
 from lab.db import clamp_limit, db, rows
 from lab.schemas import LabEventIn
 
-router = APIRouter(prefix="/lab/events", tags=["events"])
+router = APIRouter(
+    prefix="/lab/events",
+    tags=["events"],
+    dependencies=[Depends(require_admin)],
+)
 
 
 @router.get("")

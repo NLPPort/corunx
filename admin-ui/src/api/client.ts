@@ -6,15 +6,26 @@ import type {
   Items,
   Job,
 } from './types'
+import { clearSession, getToken } from '../auth/session'
 
 const BASE = import.meta.env.VITE_API_BASE ?? ''
 
+export class ApiError extends Error {
+  status: number
+  constructor(status: number, message: string) {
+    super(message)
+    this.status = status
+  }
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = getToken()
   const res = await fetch(`${BASE}${path}`, {
     ...init,
     headers: {
       Accept: 'application/json',
       ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...init?.headers,
     },
   })
@@ -26,7 +37,14 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     } catch {
       /* ignore */
     }
-    throw new Error(`${res.status}: ${detail}`)
+    if (res.status === 401 && !path.startsWith('/lab/auth/login')) {
+      clearSession()
+      if (!window.location.pathname.endsWith('/login')) {
+        const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+        window.location.assign(`${base}/login`)
+      }
+    }
+    throw new ApiError(res.status, `${res.status}: ${detail}`)
   }
   return res.json() as Promise<T>
 }
@@ -41,6 +59,18 @@ function qs(params: Record<string, string | number | undefined | null>) {
 }
 
 export const api = {
+  login: (username: string, password: string) =>
+    request<{ token: string; expires_at: number; username: string }>(
+      '/lab/auth/login',
+      {
+        method: 'POST',
+        body: JSON.stringify({ username, password }),
+      },
+    ),
+
+  me: () =>
+    request<{ username: string; expires_at: number }>('/lab/auth/me'),
+
   stats: (recent = 10) =>
     request<AdminStats>(`/lab/admin/stats${qs({ recent })}`),
 

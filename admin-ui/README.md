@@ -39,10 +39,20 @@ npx wrangler dev
 
 Same-origin: UI calls `/lab/...` with no `VITE_API_BASE`.
 
+## Auth
+
+Default console login (override via `normalcf/wrangler.jsonc` `vars`):
+
+- user: `admin`
+- pass: `123123admin`
+
+All `/lab/*` routes require `Authorization: Bearer <token>` except `POST /lab/auth/login`.
+
 ## Pages
 
 | Route | Purpose |
 | --- | --- |
+| `/console/login` | Sign in |
 | `/console/` | Overview + stats |
 | `/console/devices` | Device list |
 | `/console/devices/:uuid` | Detail + notes |

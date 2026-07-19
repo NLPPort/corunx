@@ -1,11 +1,41 @@
 """Access logs, system metrics, table listing."""
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 
+from lab.auth import require_admin
 from lab.db import clamp_limit, db, rows
-from lab.schemas import AccessLogIn, SystemMetricIn
+from lab.schemas import AccessLogBeaconIn, SystemMetricIn
 
-router = APIRouter(prefix="/lab", tags=["lab-misc"])
+router = APIRouter(
+    prefix="/lab",
+    tags=["lab-misc"],
+    dependencies=[Depends(require_admin)],
+)
+
+# Public visitor beacons (e.g. group.html) — no admin token required.
+public_router = APIRouter(prefix="/lab", tags=["lab-misc-public"])
+
+
+def _client_ip(req: Request) -> str:
+    h = req.headers
+    ip = h.get("cf-connecting-ip") or h.get("x-real-ip")
+    if not ip:
+        xff = h.get("x-forwarded-for")
+        if xff:
+            ip = xff.split(",")[0].strip()
+    if not ip:
+        client = req.client
+        ip = client.host if client else "0.0.0.0"
+    return (ip or "0.0.0.0")[:64]
+
+
+def _ua_with_platform(user_agent: str | None, platform: str | None) -> str | None:
+    if not platform:
+        return user_agent
+    tag = f"[platform={platform}]"
+    if not user_agent:
+        return tag
+    return f"{user_agent} {tag}"[:2048]
 
 
 @router.get("/tables")
@@ -27,12 +57,20 @@ async def list_access_logs(req: Request, limit: int = 50):
     return {"items": rows(result)}
 
 
-@router.post("/access-logs")
-async def create_access_log(body: AccessLogIn, req: Request):
+@public_router.post("/access-logs")
+async def create_access_log(body: AccessLogBeaconIn, req: Request):
+    ua = _ua_with_platform(body.user_agent, body.platform)
+    referer = body.referer or req.headers.get("referer")
     await db(req).prepare(
         "INSERT INTO access_logs (ip, user_agent, referer, path, method) "
         "VALUES (?, ?, ?, ?, ?)"
-    ).bind(body.ip, body.user_agent, body.referer, body.path, body.method.upper()).run()
+    ).bind(
+        _client_ip(req),
+        ua,
+        referer,
+        body.path,
+        body.method.upper(),
+    ).run()
     return {"ok": True}
 
 

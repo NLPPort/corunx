@@ -1,12 +1,17 @@
 """Owned-test artifact metadata (not exfil)."""
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 
+from lab.auth import require_admin
 from lab.columns import LAB_ARTIFACT_COLUMNS
 from lab.db import clamp_limit, db, last_row_id, rows
 from lab.schemas import LabArtifactIn
 
-router = APIRouter(prefix="/lab/artifacts", tags=["artifacts"])
+router = APIRouter(
+    prefix="/lab/artifacts",
+    tags=["artifacts"],
+    dependencies=[Depends(require_admin)],
+)
 
 
 async def _get_artifact(req: Request, artifact_id: int):

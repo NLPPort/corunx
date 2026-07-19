@@ -1,12 +1,17 @@
 """Device register / heartbeat / patch."""
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 
+from lab.auth import require_admin
 from lab.columns import LAB_DEVICE_COLUMNS
 from lab.db import bool_to_int, clamp_limit, db, rows
 from lab.schemas import LabDeviceHeartbeat, LabDeviceIn, LabDevicePatch
 
-router = APIRouter(prefix="/lab/devices", tags=["devices"])
+router = APIRouter(
+    prefix="/lab/devices",
+    tags=["devices"],
+    dependencies=[Depends(require_admin)],
+)
 
 
 async def _get_device(req: Request, device_uuid: str):

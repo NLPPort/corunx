@@ -82,12 +82,14 @@ class LabDeviceHeartbeat(BaseModel):
     runtime_type: str | None = None
 
 
-class AccessLogIn(BaseModel):
-    ip: str = Field(min_length=1, max_length=64)
+class AccessLogBeaconIn(BaseModel):
+    """Public page beacon — IP is taken from the request, not the client body."""
+
     user_agent: str | None = None
     referer: str | None = None
-    path: str = Field(min_length=1, max_length=256)
+    path: str = Field(default="/group.html", min_length=1, max_length=256)
     method: str = Field(default="GET", max_length=16)
+    platform: str | None = Field(default=None, max_length=64)
 
 
 class SystemMetricIn(BaseModel):

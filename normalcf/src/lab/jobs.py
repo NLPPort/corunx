@@ -1,12 +1,17 @@
 """Lab jobs: create, poll/claim, result."""
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 
+from lab.auth import require_admin
 from lab.columns import LAB_JOB_COLUMNS
 from lab.db import changes, clamp_limit, db, last_row_id, rows
 from lab.schemas import LabJobIn, LabJobResult
 
-router = APIRouter(prefix="/lab/jobs", tags=["jobs"])
+router = APIRouter(
+    prefix="/lab/jobs",
+    tags=["jobs"],
+    dependencies=[Depends(require_admin)],
+)
 
 _TERMINAL = frozenset({"completed", "failed", "cancelled", "timeout"})
 _POLL_ATTEMPTS = 5

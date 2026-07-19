@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { api } from '../api/client'
+import { useAuth } from '../auth/AuthContext'
 
 const links = [
   { to: '/', label: 'Overview', end: true },
@@ -11,6 +12,7 @@ const links = [
 ]
 
 export function Layout() {
+  const { username, logout } = useAuth()
   const [health, setHealth] = useState<string>('…')
 
   useEffect(() => {
@@ -44,7 +46,14 @@ export function Layout() {
             </NavLink>
           ))}
         </nav>
-        <div className="sidebar-foot">status · {health}</div>
+        <div className="sidebar-foot">
+          <div>
+            {username ?? 'admin'} · {health}
+          </div>
+          <button type="button" className="btn logout-btn" onClick={logout}>
+            Sign out
+          </button>
+        </div>
       </aside>
       <main className="main">
         <Outlet />

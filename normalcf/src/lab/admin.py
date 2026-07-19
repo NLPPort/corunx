@@ -1,11 +1,16 @@
 """Admin read model: aggregate lab stats."""
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 
+from lab.auth import require_admin
 from lab.columns import LAB_ARTIFACT_COLUMNS, LAB_DEVICE_COLUMNS, LAB_JOB_COLUMNS
 from lab.db import clamp_limit, db, rows
 
-router = APIRouter(prefix="/lab/admin", tags=["admin"])
+router = APIRouter(
+    prefix="/lab/admin",
+    tags=["admin"],
+    dependencies=[Depends(require_admin)],
+)
 
 
 async def _count(req: Request, sql: str, *binds) -> int:
