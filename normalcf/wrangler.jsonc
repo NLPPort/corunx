@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "normalcf-fastapi",
+  "main": "src/worker.py",
+  "compatibility_date": "2026-07-18",
+  "compatibility_flags": ["python_workers", "python_dedicated_snapshot"],
+  // Remove the Container Durable Object from the earlier partial deploy
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["FastAPIContainer"]
+    },
+    {
+      "tag": "v2",
+      "deleted_classes": ["FastAPIContainer"]
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "normalcf-lab",
+      "database_id": "5d918540-6637-4874-93f8-b374ea3faf31"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "normalcf-fastapi",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Minimal FastAPI app on Cloudflare Python Workers",
+  "scripts": {
+    "deploy": "uv run pywrangler deploy",
+    "dev": "uv run pywrangler dev",
+    "start": "uv run pywrangler dev",
+    "db:migrate:local": "wrangler d1 execute normalcf-lab --local --file=./migrations/0001_lab.sql && wrangler d1 execute normalcf-lab --local --file=./migrations/0002_lab_gap.sql && wrangler d1 execute normalcf-lab --local --file=./migrations/0003_defend_fields.sql && wrangler d1 execute normalcf-lab --local --file=./migrations/0004_lab_ops.sql",
+    "db:migrate:remote": "wrangler d1 execute normalcf-lab --remote --file=./migrations/0001_lab.sql && wrangler d1 execute normalcf-lab --remote --file=./migrations/0002_lab_gap.sql && wrangler d1 execute normalcf-lab --remote --file=./migrations/0003_defend_fields.sql && wrangler d1 execute normalcf-lab --remote --file=./migrations/0004_lab_ops.sql",
+    "db:migrate:gap:local": "wrangler d1 execute normalcf-lab --local --file=./migrations/0002_lab_gap.sql",
+    "db:migrate:gap:remote": "wrangler d1 execute normalcf-lab --remote --file=./migrations/0002_lab_gap.sql",
+    "db:migrate:defend:local": "wrangler d1 execute normalcf-lab --local --file=./migrations/0003_defend_fields.sql",
+    "db:migrate:defend:remote": "wrangler d1 execute normalcf-lab --remote --file=./migrations/0003_defend_fields.sql",
+    "db:migrate:ops:local": "wrangler d1 execute normalcf-lab --local --file=./migrations/0004_lab_ops.sql",
+    "db:migrate:ops:remote": "wrangler d1 execute normalcf-lab --remote --file=./migrations/0004_lab_ops.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^4.46.0"
+  }
+}

@@ -1,0 +1,19 @@
+[project]
+name = "normalcf-fastapi"
+version = "1.0.0"
+description = "Minimal FastAPI app on Cloudflare Python Workers"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi",
+]
+
+[dependency-groups]
+dev = [
+  "workers-py",
+  "workers-runtime-sdk",
+]
+
+# Prefer mirror: files.pythonhosted.org SSL often breaks on this network
+[[tool.uv.index]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true
